@@ -21,16 +21,16 @@ Eigen::Matrix4d Matrix_reshape(Eigen::Matrix<double,9,1> a)
 }
 Eigen::Matrix<double,Eigen::Dynamic,3> peig5pt(Eigen::Matrix<double,3,5>q1,Eigen::Matrix<double,3,5>q2)
 {
-    cout<<"Q1:"<<q1<<endl;
-    cout<<"Q2:"<<q2<<endl;
+    //cout<<"Q1:"<<q1<<endl;
+    //cout<<"Q2:"<<q2<<endl;
 
     Eigen::Matrix<double,5,3>QQ1=q1.transpose();
     Eigen::Matrix<double,5,3>QQ2=q2.transpose();
-    cout<<"Qq1:"<<QQ1<<endl;
-    cout<<"Qq2:"<<QQ2<<endl;
+    //cout<<"Qq1:"<<QQ1<<endl;
+    //cout<<"Qq2:"<<QQ2<<endl;
     Eigen::Matrix<double,5,9>Q;
 
-    cout<<QQ2.col(0).cwiseProduct(QQ1.col(0))<<endl;
+    //cout<<QQ2.col(0).cwiseProduct(QQ1.col(0))<<endl;
     Q<<QQ2.col(0).cwiseProduct(QQ1.col(0)),
            QQ2.col(0).cwiseProduct(QQ1.col(1)),
             QQ2.col(0).cwiseProduct(QQ1.col(2)),
@@ -48,18 +48,18 @@ Eigen::Matrix<double,Eigen::Dynamic,3> peig5pt(Eigen::Matrix<double,3,5>q1,Eigen
     V = svd.matrixV();
     U = svd.matrixU();
     cout<<"V9X9:"<<svd.matrixV()<<endl;
-    cout<<"U5X5:"<<svd.matrixU()<<endl;
+    //cout<<"U5X5:"<<svd.matrixU()<<endl;
 
     Eigen::Matrix4d E1,E2,E3,E4;
 //这部分为了方便给Mcoefs矩阵赋值直接让E1变为4*4矩阵让E1第一行和第一列空出来为0
     E1=Matrix_reshape(V.col(5));
-    cout<<"E1:"<<E1<<endl;
+    //cout<<"E1:"<<E1<<endl;
     E2=Matrix_reshape(V.col(6));
     E3=Matrix_reshape(V.col(7));
     E4=Matrix_reshape(V.col(8));
     //EE1是把0去掉的原来的3X3矩阵，同理EE2,3,4
     Eigen::Matrix3d EE1=E1.bottomRightCorner(3, 3);
-    cout<<"EE1:"<<EE1<<endl;
+    //cout<<"EE1:"<<EE1<<endl;
     Eigen::Matrix3d EE2=E2.bottomRightCorner(3, 3);
     Eigen::Matrix3d EE3=E3.bottomRightCorner(3, 3);
     Eigen::Matrix3d EE4=E4.bottomRightCorner(3, 3);
@@ -268,61 +268,61 @@ Eigen::Matrix<double,Eigen::Dynamic,3> peig5pt(Eigen::Matrix<double,3,5>q1,Eigen
     Mcoefs(199) = -E4(1,1)*E4(1,1)*E4(3,3)-E4(1,2)*E4(1,2)*E4(3,3)-E4(2,1)*E4(2,1)*E4(3,3)-E4(2,2)*E4(2,2)*E4(3,3)+2*E4(1,2)*E4(3,2)*E4(1,3)+E4(1,3)*E4(1,3)*E4(3,3)+E4(3,2)*E4(3,2)*E4(3,3)+E4(3,1)*E4(3,1)*E4(3,3)+2*E4(1,1)*E4(3,1)*E4(1,3)+E4(3,3)*E4(3,3)*E4(3,3)+E4(2,3)*E4(2,3)*E4(3,3)+2*E4(2,1)*E4(3,1)*E4(2,3)+2*E4(3,2)*E4(2,2)*E4(2,3);
 
 
-    Eigen::Matrix<double,10,10> D1,D2,D3,D4;
+    Eigen::Matrix<double,10,10> C0,C1,C2,C3;
 
-    D1<<Mcoefs.col(0),Mcoefs.col(1),Mcoefs.col(2),Mcoefs.col(3),Mcoefs.col(10),Mcoefs.col(11),Mcoefs.col(12),Mcoefs.col(16),Mcoefs.col(17),Mcoefs.col(19);
+    C0<<Mcoefs.col(0),Mcoefs.col(1),Mcoefs.col(2),Mcoefs.col(3),Mcoefs.col(10),Mcoefs.col(11),Mcoefs.col(12),Mcoefs.col(16),Mcoefs.col(17),Mcoefs.col(19);
     Eigen::Matrix<double,10,1> zero;
     zero.setZero();
-    D2<<zero,zero,zero,zero,Mcoefs.col(4),Mcoefs.col(5),Mcoefs.col(6),Mcoefs.col(13),Mcoefs.col(14),Mcoefs.col(18);
-    D3<<zero,zero,zero,zero,zero,zero,zero,Mcoefs.col(7),Mcoefs.col(8),Mcoefs.col(15);
-    D4<<zero,zero,zero,zero,zero,zero,zero,zero,zero,Mcoefs.col(9);
+    C1<<zero,zero,zero,zero,Mcoefs.col(4),Mcoefs.col(5),Mcoefs.col(6),Mcoefs.col(13),Mcoefs.col(14),Mcoefs.col(18);
+    C2<<zero,zero,zero,zero,zero,zero,zero,Mcoefs.col(7),Mcoefs.col(8),Mcoefs.col(15);
+    C3<<zero,zero,zero,zero,zero,zero,zero,zero,zero,Mcoefs.col(9);
 //得到D1,D2,D3,D4
-    cout<<"D1':"<<endl<<D1<<endl;
-    cout<<"D2':"<<endl<<D2<<endl;
-    cout<<"D3':"<<endl<<D3<<endl;
-    cout<<"D4':"<<endl<<D4<<endl;
+    //cout<<"D1':"<<endl<<D1<<endl;
+    //cout<<"D2':"<<endl<<D2<<endl;
+    //cout<<"D3':"<<endl<<D3<<endl;
+    //cout<<"D4':"<<endl<<D4<<endl;
  //*********************以上没有问题，以下是模仿论文对matlab中polyeig函数的处理；******//////////////////
-    Eigen::Matrix<double,10,10> DD1,DD2,DD3,DD4;
-       DD1=D1.inverse();
-       DD2=-DD1*D2;
-       DD3=-DD1*D3;
-       DD4=-DD1*D4;
-      cout<<"DD1':"<<endl<<DD1<<endl;
-      cout<<"DD2':"<<endl<<DD2<<endl;
-      cout<<"DD3':"<<endl<<DD3<<endl;
-      cout<<"DD4':"<<endl<<DD4<<endl;
-      Eigen::Matrix<double,30,30> A2,B2;
+    Eigen::Matrix<double,10,10> C0_inverce,A33,A32,A31;
+       C0_inverce=C0.inverse();
+       A33=-C0_inverce*C1;
+       A32=-C0_inverce*C2;
+       A31=-C0_inverce*C3;
+      cout<<"DD1':"<<endl<<C0_inverce<<endl;
+      cout<<"DD2':"<<endl<<A33<<endl;
+      cout<<"DD3':"<<endl<<A32<<endl;
+      cout<<"DD4':"<<endl<<A31<<endl;
+      Eigen::Matrix<double,30,30> A,B2;
       Eigen::MatrixXd Ident=Eigen::MatrixXd::Identity(10,10);//定义10*10单位矩阵
       Eigen::MatrixXd ZERO=Eigen::MatrixXd::Zero(10,10);//定义10*10单位矩阵
-      A2<<ZERO,Ident,ZERO,//得到A2=0,1,0
+      A<<ZERO,Ident,ZERO,//得到A2=0,1,0
               ZERO,ZERO,Ident,//. 0,0,1
-              DD4,DD3,DD2;    //DD4,DD3,DD2
+              A31,A32,A33;    //DD4,DD3,DD2
       B2<<Ident,ZERO,Ident,
           ZERO,Ident,ZERO,
           ZERO,ZERO,Ident;
       //B2实际未使用，因为转换完后方程为AY=1/lamda*Y,直接求解
        //Eigen::GeneralizedSelfAdjointEigenSolver<Eigen::MatrixXd>  eig(A2,B2);
-       Eigen::EigenSolver<Eigen::MatrixXd> eig4(A2);//求解A2的特征xiang向量和特征值
+       Eigen::EigenSolver<Eigen::MatrixXd> eig4(A);//求解A2的特征xiang向量和特征值
 
-Eigen::Matrix<complex<double>,Eigen::Dynamic,1> z2;
-z2=eig4.eigenvalues();//储存复数类型的特征值
-Eigen::Matrix<complex<double>,Eigen::Dynamic,Eigen::Dynamic>Ew2;
-Ew2=eig4.eigenvectors();//储存复数类型的特征向量
-cout<<endl<<"Ew2.size():"<<Ew2.size()<<endl;
-cout<<"Z2"<<endl<<z2;
-Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic> EEEE2;//将得到特征向量去掉复数储存
-Eigen::Matrix<double,10,30> QQQQQ2;
-EEEE2=QQQQQ2;
+Eigen::Matrix<complex<double>,Eigen::Dynamic,1> eigen_values;
+eigen_values=eig4.eigenvalues();//储存复数类型的特征值
+Eigen::Matrix<complex<double>,Eigen::Dynamic,Eigen::Dynamic> eigenvector;
+eigenvector=eig4.eigenvectors();//储存复数类型的特征向量
+//cout<<endl<<"Ew2.size():"<<Ew2.size()<<endl;
+//cout<<"Z2"<<endl<<z2;
+//Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic> EEEE2;//将得到特征向量去掉复数储存
+Eigen::Matrix<double,10,30> EEEE2;
+//EEEE2=QQQQQ2;
 Eigen::Matrix<double,30,1>zz2;//储存去掉复数的特征向量
 int w=0;
-for(int i =0;i<z2.size();i++)
+for(int i =0;i<eigen_values.size();i++)
 {
-    if(z2(i).imag()==0&&z2(i).real()!=0)//去掉实数为0，虚数有值的特征值和向量
+    if(eigen_values(i).imag()==0&&eigen_values(i).real()!=0)//去掉实数为0，虚数有值的特征值和向量
     {
-        zz2(w)=1/z2(i).real();//由于求出的特征值是1/lamda，需要转换
+        zz2(w)=1/eigen_values(i).real();//由于求出的特征值是1/lamda，需要转换
         for(int pp=0;pp<10;pp++)
         {
-            EEEE2(pp,w)=(Ew2(pp,i).real()+zz2(w)*Ew2(2*pp,i).real()+zz2(w)*zz2(w)*Ew2(3*pp,i).real())/3;
+            EEEE2(pp,w)=(eigenvector(pp,i).real()+zz2(w)*eigenvector(2*pp,i).real()+zz2(w)*zz2(w)*eigenvector(3*pp,i).real())/3;
             //原来的特征向量是Y的特征向量30*30，前十行为原本D1,D2,D3,D4问题的特征向量，第11-20行为1/lamda×原先特征向量,第21-30为（1/lamda)^2×原先特征向量
             //所以三个加在一起平均处理
         }
@@ -371,7 +371,7 @@ int main()
             Egt<<21.36410238362200 ,-6.45974435705903 ,-12.57571428668080,
             -7.57644257286238, -20.76739671331773  ,28.55199769513539,
              23.52168039400320 ,-21.32072430358359  , 1.00000000000000;
-    cout<<Egt<<endl;
+    //cout<<Egt<<endl;
     Q1<<-0.06450996083506  , 0.12991134106070  ,-0.01417169260989  , 0.02077599827229  , 0.15970376410206,
         0.13271495297568 ,  0.25636930852309 , -0.00201819071777  , 0.14974189941659  , 0.17782283760921,
         1.00000000000000  , 1.00000000000000  , 1.00000000000000  , 1.00000000000000 ,  1.00000000000000;
